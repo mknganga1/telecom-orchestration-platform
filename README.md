@@ -4,11 +4,11 @@ A multi-node, isolated networking environment designed to simulate decentralized
 
 ---
 
-## 🖥️ Node Resource Allocation Blueprint (Milestone 1 Foundation)
+## Node Resource Allocation Blueprint (Milestone 1 Foundation)
 
 To satisfy the requirements of Milestone 1, individual hardware resource footprints were dynamically provisioned using the Oracle VM VirtualBox hypervisor. The resource metrics are structured hierarchically to establish a heterogeneous distributed computing system on a single host.
 
-### 🏢 1. Central Orchestrator / Server Node (`godfather`)
+### 1. Central Orchestrator / Server Node (`godfather`)
 * **Role:** Distributed Controller / Gateway Router / Core Service VNF Host
 * **Operating System Base:** Ubuntu (64-bit)
 * **Processor Allocation:** 2 vCPUs
@@ -19,7 +19,7 @@ To satisfy the requirements of Milestone 1, individual hardware resource footpri
   * **Adapter 1:** NAT Network (Profile: `'NatNetwork'`) — Provides secure outbound public WAN connectivity, acting as the system gateway to external servers.
   * **Adapter 2:** Internal Network (Profile: `'intnet'`) — An isolated Local Area Network (LAN) link dedicated to internal multi-node traffic, routing management scripts, and handling node lifecycle commands.
 
-### 📱 2. Edge Client / Consumer Node (`spoiltbrat`)
+### 2. Edge Client / Consumer Node (`spoiltbrat`)
 * **Role:** Constrained Edge Node / Process execution target / Load distribution sink
 * **Operating System Base:** Ubuntu (64-bit)
 * **Processor Allocation:** 1 vCPU *(Half the processing footprint of the server to enforce heterogeneity)*
@@ -30,7 +30,7 @@ To satisfy the requirements of Milestone 1, individual hardware resource footpri
 
 ---
 
-## 🛠️ Infrastructure Provisioning Blueprint (Milestones 1 & 2 Script)
+## Infrastructure Provisioning Blueprint (Milestones 1 & 2 Script)
 
 The following shell script tracks the chronological engineering footprint implemented within the centralized controller node to map routing pathways, establish the local service fabric domain (`youngbuck.local`), and configure distributed simulation bounds.
 
@@ -115,7 +115,7 @@ echo "========================================================================="
 
 
 
-## 📐 MILESTONE 3 — DISTRIBUTED ARCHITECTURE DESIGN
+##  MILESTONE 3 — DISTRIBUTED ARCHITECTURE DESIGN
 
 Our platform successfully transforms its initial networking prototype into a proper distributed computing framework by evaluating and executing four distinct architectural styles:
 
@@ -134,7 +134,7 @@ Our platform successfully transforms its initial networking prototype into a pro
 
 ---
 
-## 🕒 MILESTONE 4 — DISTRIBUTED ALGORITHMS & COORDINATION
+##  MILESTONE 4 — DISTRIBUTED ALGORITHMS & COORDINATION
 
 ### 1. The Distributed State Challenge
 In decentralized networks, individual computer hardware clocks experience minor timeline drift. If our edge server and core server rely on standard wall-clock time to record transactions, timing errors occur due to network lag. This leads to out-of-order logs where configuration events appear to happen out of logical sequence.
@@ -153,7 +153,7 @@ This script sets up a message tracking protocol using relative integers (Counter
 
 ---
 
-## 🚀 LIVE DEMONSTRATION BLUEPRINT
+## LIVE DEMONSTRATION BLUEPRINT
 
 To demonstrate our distributed coordination protocol live during grading, run the scripts concurrently across our private network infrastructure interfaces using manually typed inputs:
 
@@ -171,7 +171,7 @@ python3 coordination_protocol.py
 # Enter Target Server IP: 192.168.100.1
 ```
 
-### 👁️ Expected Real-Time Output Log Flow
+### Expected Real-Time Output Log Flow
 The terminal screens will immediately trigger an interactive handshaking protocol loop, printing ticking counters that synchronize in complete chronological harmony:
 
 **On your Client window (`spoiltbrat`):**
