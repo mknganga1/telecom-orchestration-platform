@@ -197,3 +197,41 @@ The terminal screens will immediately trigger an interactive handshaking protoco
        Incoming Event Timestamp: 2
        [STATE MUTATION] Cluster State Unified. Synchronized Clock: 3
 ```
+
+
+## MILESTONE 5 — DISTRIBUTED TRANSACTIONS
+
+To satisfy the requirements of Milestone 5, our platform expands its custom synchronization subsystem to support atomic distributed configuration operations across our heterogeneous testbed, shifting from pure telemetry streaming to transactional execution.
+
+### 1. Two-Phase Commit (2PC) Architectural Design
+Because network configuration state mutations must occur in an all-or-nothing sequence, we implemented an automated Two-Phase Commit (2PC) engine over raw TCP sockets on port `9999` to govern multi-node parameter transitions (such as modifying global network telemetry polling intervals from `3s` to `1s`):
+
+*   **Phase 1 (Prepare / Voting):** The Central Orchestrator (`godfather`) acts as the Coordinator. It broadcasts a `PREPARE` packet containing the proposed hardware state adjustment. The Edge Client (`spoiltbrat`), operating as the Participant, evaluates local resource parameters (CPU quotas, memory availability) and replies with a `VOTE_COMMIT` or `VOTE_ABORT` payload.
+*   **Phase 2 (Global Decision):** If unanimous consensus is achieved, the Coordinator broadcasts a `GLOBAL_COMMIT` packet, forcing all nodes to write the transaction to their localized state blocks permanently. If an abort vote or a network drop occurs, a `GLOBAL_ABORT` packet is broadcast, instantly triggering a localized rollback sequence to maintain system consistency.
+
+### 2. Transaction Performance & Failure Evaluation
+
+| Performance Metric | Evaluation Layer Baseline | Failure Behavior & Resiliency Mechanism |
+| :--- | :--- | :--- |
+| **Transaction Latency** | ~2.015 seconds (inclusive of mock hardware validation delays) | Automatically absorbs network dropping without locking up host resources. |
+| **Throughput Capacity** | Single-flight atomic commits per session | Rejects overlapping structural transactions to enforce database-level isolation. |
+| **Recovery Strategy** | System socket-level timeout safeguards set to `5.0s` | If a node goes offline during Phase 1, the orchestrator triggers an automatic `GLOBAL_ABORT` rollback. |
+| **Consistency / Availability**| Strict ACID compliance enforced across internal layers | Prioritizes complete safety (Consistency) over system liveness (Availability). |
+
+---
+
+## MILESTONE 6 — CONCURRENCY AND DEADLOCK MANAGEMENT
+
+Milestone 6 introduces concurrent multi-process flows within our resource-constrained edge computing environment to isolate and mitigate resource contention hazards on shared subsystem nodes.
+
+### 1. Mathematical Resource Allocation Graph (RAG) Modeling
+We modeled concurrent resource tracking metrics under a formal system allocation schema ($P_i \rightarrow R_j$) running on `spoiltbrat` to map conflicts over local operational resources (e.g., File Locks, Core CPU Slots, Network Routing Tables):
+
+*   **Assignment Edges (Locks Held):** 
+    *   $R_A \rightarrow P_1$ (Simulated Config File Resource A is locked by Worker Thread 1)
+    *   $R_B \rightarrow P_2$ (Simulated Telemetry File Resource B is locked by Worker Thread 2)
+*   **Request Edges (Blocking Dependencies):** 
+    *   $P_1 \rightarrow R_B$ (Worker Thread 1 is blocked waiting for Resource B)
+    *   $P_2 \rightarrow R_A$ (Worker Thread 2 is blocked waiting for Resource A)
+
+### 2. Verification Analysis: Circular Wait Condition
