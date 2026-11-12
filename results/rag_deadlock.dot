@@ -1,0 +1,15 @@
+digraph RAG {
+  rankdir=LR;
+  "P1" [shape=circle];
+  "P2" [shape=circle];
+  "P3" [shape=circle];
+  "config_db" [shape=box];
+  "telemetry_log" [shape=box];
+  "routing_table" [shape=box];
+  "config_db" -> "P1" [label="held"];
+  "telemetry_log" -> "P2" [label="held"];
+  "routing_table" -> "P3" [label="held"];
+  "P1" -> "telemetry_log" [label="request", style=dashed, color=red];
+  "P2" -> "routing_table" [label="request", style=dashed, color=red];
+  "P3" -> "config_db" [label="request", style=dashed, color=red];
+}
