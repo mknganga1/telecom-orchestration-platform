@@ -199,7 +199,7 @@ The terminal screens will immediately trigger an interactive handshaking protoco
 ```
 
 
-## MILESTONE 5 — DISTRIBUTED TRANSACTIONS
+# MILESTONE 5 — DISTRIBUTED TRANSACTIONS
 
 To satisfy the requirements of Milestone 5, our platform expands its custom synchronization subsystem to support atomic distributed configuration operations across our heterogeneous testbed, shifting from pure telemetry streaming to transactional execution.
 
@@ -235,3 +235,47 @@ We modeled concurrent resource tracking metrics under a formal system allocation
     *   $P_2 \rightarrow R_A$ (Worker Thread 2 is blocked waiting for Resource A)
 
 ### 2. Verification Analysis: Circular Wait Condition
+
+
+
+
+## MILESTONE 7 — FAULT TOLERANCE AND RECOVERY
+
+Milestone 7 introduces active resilience engineering, validating the platform's stability bounds against controlled network, service, and hardware failures.
+
+### 1. Controlled Fault Modeling & Byzantine Analysis
+Our system behavior was tested and analyzed across five distinct distributed failure modes:
+*   **Crash & Node Failure:** Simulated by sending a hard termination signal (`SIGINT` via `Ctrl + C`) to the primary master daemon on `godfather` or powering down the VM.
+*   **Communication & Omission Failure:** Simulated by disconnecting the internal network interface (`intnet`) inside VirtualBox, causing heartbeat pings and 2PC packets to drop silently without acknowledgment.
+*   **Service Failure:** Simulated by stopping a critical background VNF daemon (`sudo systemctl stop apache2`) while keeping the underlying Ubuntu host operating system online.
+*   **Byzantine Behavior Analysis:** Analyzed scenarios where a compromised or malfunctioning edge node (`problemchild`) transmits corrupted, erratic, or out-of-bounds telemetry payloads without crashing. Mitigated by implementing strict payload validation checks at the core receiver before committing state updates.
+
+### 2. Implementation: Detection, Replication, Failover & Recovery
+*   **Failure Detection:** The backup edge node (`spoiltbrat`) runs `fault_tolerance_node.py`, transmitting lightweight TCP `HEARTBEAT_PING` probes to `godfather` on port `9998` every `1.0s`.
+*   **State Replication:** Upon every healthy `HEARTBEAT_ACK` response, `spoiltbrat` continuously replicates the active cluster state (`PRIMARY_IP`, `ACTIVE_VNF=apache2`, and sync timestamps) to a local persistent file (`/tmp/replicated_cluster_state.cfg`).
+*   **Automated Failover & Recovery:** If 3 consecutive heartbeats fail (`3.0s` detection window), `spoiltbrat` declares a primary failure, loads the replicated state file from disk, and promotes itself to the active orchestrator role.
+
+### 3. Availability & Recovery-Time Evaluation
+
+ Performance Evaluation Metric | Real-Time System Result Baseline |
+| :--- | :--- |
+| **Failure Detection Threshold** | `3.00 seconds` (3 missed 1-second heartbeat probes) |
+| **Mean Time To Recovery (MTTR)** | `~5.512 seconds` (Detection + state load + VNF re-binding) |
+| **Calculated System Availability** | `89.24%` (Measured across our active fault-injection test window) |
+
+---
+
+## MILESTONE 8 — DISTRIBUTED SYSTEM MODELS
+
+### 1. Comprehensive 5-Model Comparison Matrix
+
+| System Model | Latency & Throughput | Scalability & Resource Use | Reliability & Cost | Telecommunications Application Fit |
+| :--- | :--- | :--- | :--- | :--- |
+| **Host-Based** | Low local latency, severe central throughput bottleneck. | Poor scalability; central mainframe overloaded while clients sit idle. | Low reliability (single point of failure); very high hardware cost. | **Poor:** Unsuitable for geographically distributed cell sites. |
+| **Processor Pool** | High scheduling latency due to dynamic task allocation. | High scalability and efficient CPU pooling across tasks. | High reliability, but complex management overhead. | **Fair:** Good for cloud core analytics, poor for real-time packet routing. |
+| **Workstation** | Unpredictable latency depending on peer availability. | High resource waste on idle desktops; hard to scale deterministically. | Low reliability; nodes enter and leave unpredictably. | **Poor:** Lacks guaranteed uptime for carrier-grade telecom services. |
+| **Server-Based** | **Low latency (<0.5ms)** and predictable gateway throughput. | Moderate scalability; constrained by core server capacity. | High reliability when paired with failover; cost-effective edge nodes. | **Good:** Ideal for centralized DNS, DHCP, and 2PC coordination. |
+| **Integrated Model** | **Optimal balance:** Edge handles local speed; Core handles heavy logic. | **Highest scalability:** Combines server-based cores with edge/cloud tiers. | **Highest reliability:** Supports multi-tier failover and state replication. | **Best Fit (Selected Architecture):** Directly mirrors modern 5G Edge-Core-Cloud networks. |
+
+### 2. Architectural Justification
+While our prototype begins with a **Server-Based** master-worker topology (`godfather` managing `spoiltbrat` and `problemchild`), our complete Edge-to-Core-to-Cloud design represents an **Integrated Distributed System Model**. Telecommunications infrastructure requires centralized, authoritative gateways to enforce strict causal ordering (Lamport clocks), atomic routing updates (2PC), and DNS resolution, while simultaneously leveraging lightweight edge nodes for local preprocessing and automated failover. This hybrid integrated model delivers low-latency edge execution (`<0.5ms` local coordination), cost-effective horizontal scaling, and high carrier-grade availability.
