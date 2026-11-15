@@ -1,5 +1,7 @@
 Deploys on godfather — Milestone 8
 
+
+
 import time
 import random
 
@@ -72,3 +74,6 @@ def simulate_models():
 
 if __name__ == "__main__":
     simulate_models()
+
+
+Milestone 8 requires simulation/experimental results comparing the 5 distributed system models (Host-Based, Processor Pool, Workstation, Server-Based, and Integrated Model). Running this script outputs a real-time latency, throughput, and scalability simulation table directly in the terminal to back up the architectural justification
