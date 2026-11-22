@@ -285,7 +285,7 @@ While our prototype begins with a **Server-Based** master-worker topology (`godf
 
 ## MILESTONE 9 — TRANSPARENCY AND RELIABILITY
 
-Milestone 9 abstracts the physical VirtualBox topology (`godfather` at `192.168.100.1`, `spoiltbrat` at `192.168.100.100`, and `problemchild` at `192.168.100.101`) behind a unified **Logical Resource** layer. By integrating **Docker Swarm** and **HAProxy**, client applications interact with a single logical endpoint (`http://service.consul`) without tracking physical IP addresses, replica counts, or node failures.
+Milestone 9 abstracts the physical VirtualBox topology (`godfather` at `192.168.100.1`, `spoiltbrat` at `192.168.100.100`, and `problemchild` at `192.168.100.150`) behind a unified **Logical Resource** layer. By integrating **Docker Swarm** and **HAProxy**, client applications interact with a single logical endpoint (`http://service.consul`) without tracking physical IP addresses, replica counts, or node failures.
 
 ### 1. Implementation & Evaluation of the Five Distributed Transparencies
 
